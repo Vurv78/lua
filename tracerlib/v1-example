@@ -1,0 +1,28 @@
+--@name Lib Testing
+--@author
+--@client
+--@include libs.tracer.txt
+--@model models/dav0r/camera.mdl
+
+if player() ~= owner() then return end
+
+Holo = holograms.create(Vector(),Angle(),"models/holograms/cube.mdl",Vector(0.5,0.5,0.5))
+libs_tracer = require("libs.tracer.txt")
+function dotrace(LData,T)
+    local X = LData.x
+    local Y = LData.y
+    local InitPos = LData.pos
+    local Dist = InitPos:getDistance(T.HitPos)/1000
+    local SunDir,_ = game.getSunInfo()
+    local Shading = T.HitNormal:dot(SunDir)
+    Holo:setPos(T.HitPos)
+    return T.HitSky and Color(0,0,255) or (Color(255,255,255)*(Shading+1))
+end
+function dofinish()
+    print("finished!")
+end
+
+libs_tracer.createTrace(1,Vector(128,128),dotrace,dofinish)
+libs_tracer.setCamera(1,chip())
+libs_tracer.toggleTrace(1,true)
+libs_tracer.showTrace(1,true)

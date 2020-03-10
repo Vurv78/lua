@@ -63,6 +63,7 @@ else
         local Executions = 0
         for K,TraceData in pairs(Traces) do
             Executions = 0
+            if TraceData.finished then continue end
             while math.max(quotaAverage(), quotaUsed()) < quotaMax()*0.05 and Executions < 100 do
                 if TraceData.finished then continue end
                 if not TraceData.tracing then continue end

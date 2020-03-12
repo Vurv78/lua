@@ -34,11 +34,9 @@ render.drawTextBox = function(x,y,xw,yw,txt)
         libs_textbox.strings = {}
         libs_textbox.fixfit(txt,xw,yw)
         for K,Str in pairs(libs_textbox.strings) do
-            render.setColor(Color(255,255,255))
             render.drawText(x,y+Sz_Y*(K-1),Str,0)
         end
     else
-        render.setColor(Color(255,255,255))
         render.drawText(x,y,txt,0)
     end
 end

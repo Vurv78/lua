@@ -2,6 +2,9 @@
 --@author Vurv
 --@client
 
+// Basic Textbox library for starfall, could definitely be improved which I hopefully will do over time.
+// TODO: Add aligning, make this more efficient.
+
 libs_textbox = {}
 libs_textbox.strings = {}
 libs_textbox.fixfit = function(txt,Width,Height)

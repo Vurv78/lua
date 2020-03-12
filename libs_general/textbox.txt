@@ -17,7 +17,7 @@ libs_textbox.fixfit = function(txt,Width,Height)
             libs_textbox.strings[#libs_textbox.strings+1] = TxtModified
             SizeX,SizeY = render.getTextSize(TxtModified2)
             local Fits3 = (SizeX <= Width and SizeY <= Height)
-            if not Fits3 then fixfit(TxtModified2,Width,Height) else libs_textbox.strings[#libs_textbox.strings+1] = TxtModified2 end
+            if not Fits3 then libs_textbox.fixfit(TxtModified2,Width,Height) else libs_textbox.strings[#libs_textbox.strings+1] = TxtModified2 end
             break
         end
     end

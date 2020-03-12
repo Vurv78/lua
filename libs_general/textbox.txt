@@ -1,4 +1,4 @@
---@name Functions.Textbox
+--@name functions.textbox
 --@author Vurv
 --@client
 
@@ -24,7 +24,6 @@ libs_textbox.fixfit = function(txt,Width,Height)
 end
 
 render.drawTextBox = function(x,y,xw,yw,txt)
-    libs_textbox.strings = {}
     local Font = render.getDefaultFont()
     render.setFont(Font)
     local Sz_X,Sz_Y = render.getTextSize(txt)
@@ -32,15 +31,17 @@ render.drawTextBox = function(x,y,xw,yw,txt)
     // uncomment this if you want to see the actual textbox.
     // render.drawRectFast(x,y,xw,yw)
     if not Fits then
-        Strings = {}
+        libs_textbox.strings = {}
         libs_textbox.fixfit(txt,xw,yw)
         for K,Str in pairs(libs_textbox.strings) do
             render.setColor(Color(255,255,255))
             render.drawText(x,y+Sz_Y*(K-1),Str,0)
         end
+    else
+        render.setColor(Color(255,255,255))
+        render.drawText(x,y,txt,0)
     end
 end
-
 hook.add("render","",function()
-    render.drawTextBox(0,0,256,256,"Averylongtextthatyouneedtodividetofititintoabox")
+    render.drawTextBox(0,0,256,256,"gamer")
 end)

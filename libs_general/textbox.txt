@@ -3,7 +3,7 @@
 --@client
 
 // Basic Textbox library for starfall, could definitely be improved which I hopefully will do over time.
-// TODO: Add aligning, make this more efficient.
+// TODO: Add aligning, make this more efficient. Remove bad coding practices (making several var names for essentially the same thing.)
 
 libs_textbox = {}
 libs_textbox.strings = {}

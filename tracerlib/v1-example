@@ -4,9 +4,8 @@
 --@include libs.tracer.txt
 --@model models/dav0r/camera.mdl
 
-if player() ~= owner() then return end
-
 Finished = false
+Enabled = false
 Holo = holograms.create(Vector(),Angle(),"models/holograms/cube.mdl",Vector(0.5,0.5,0.5))
 libs_tracer = require("libs.tracer.txt")
 function dotrace(LData,T)
@@ -25,12 +24,25 @@ function dofinish()
 end
 
 hook.add("renderoffscreen","",function()
-    while not Finished and quotaAverage()<quotaMax()*0.05 do
+    while Enabled and not Finished and quotaAverage()<quotaMax()*0.05 do
         libs_tracer.callTrace(1)
+    end
+end)
+
+hook.add("render","",function()
+    if not Enabled then
+        render.drawText(256,256,"Press E to Enable",1)
     end
 end)
 
 libs_tracer.createTrace(1,Vector(128,128),dotrace,dofinish)
 libs_tracer.setCamera(1,chip())
 libs_tracer.toggleTrace(1,false)
-libs_tracer.showTrace(1,true)
+
+hook.add("starfallUsed","",function(ply)
+    if ply ~= player() then return end
+    Enabled = not Enabled
+    if Enabled then
+        libs_tracer.showTrace(1,true)
+    end
+end)

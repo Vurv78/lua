@@ -4,6 +4,8 @@
 --@include libs.tracer.txt
 --@model models/dav0r/camera.mdl
 
+// Updated 4/17/2020, Added a simple "Press E to render" gui.
+
 Finished = false
 Enabled = false
 Holo = holograms.create(Vector(),Angle(),"models/holograms/cube.mdl",Vector(0.5,0.5,0.5))

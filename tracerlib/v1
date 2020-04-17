@@ -3,7 +3,6 @@
 --@shared
 if SERVER then
     // to do
-
 else
     local DoDebug
     libs_tracer = { data = { rts = {} } }
@@ -30,6 +29,20 @@ else
             showing = false,
             x = 0,
             y = 0,
+            trace = function(Color)
+                local X = x
+                local Y = y
+                if X >= (res.x-1) then
+                    if Y >= res.y-1 then finished = true donefunc() end
+                    traceobj.y = (Y + 1)%Res.y
+                end
+                traceobj.x = (X + 1)%Res.x
+                local Pos = traceobj.pos
+                local Dir = Vector(100,-X+Res.x/2,-Y+Res.y/2 ):getRotated(traceobj.ang):getNormalized()
+                local ActualTrace = trace.trace(Pos,Pos+Dir*60000,{traceobj.ent})
+                render.setColor(Color)
+                render.drawRectFast(X*Scale.x,Y*Scale.y,Scale.x,Scale.y)
+            end,
         }
         render.createRenderTarget("libs.tracer_"..Index)
         rttab[Index] = traceobj
@@ -58,33 +71,40 @@ else
         libs_tracer.data.rts[Ind].showing = (Bool or false)
     end
     
+    libs_tracer.callTrace = function(Ind)
+        // Calls a trace to be rendered. If you want to use while loops etc.
+        // Returns: success or failure (bool)
+        local TraceData = libs_tracer.data.rts[Ind]
+        if TraceData == nil then return false end
+        if TraceData.finished then return false end
+        local Res = TraceData.res
+        local ScaleFactor = (1024/Res)
+        render.selectRenderTarget("libs.tracer_"..Ind)
+            local X = TraceData.x
+            local Y = TraceData.y
+            if X >= (Res.x-1) then
+                if Y >= Res.y-1 then TraceData.finished = true TraceData.donefunc(Object) end
+                TraceData.y = (Y + 1)%Res.y
+            end
+            TraceData.x = (X + 1)%Res.x
+            local Pos = TraceData.pos
+            local Dir = Vector(100,-X+Res.x/2,-Y+Res.y/2 ):getRotated(TraceData.ang):getNormalized()
+            local ActualTrace = trace.trace(Pos,Pos+Dir*60000,{TraceData.ent})
+            render.setColor(dotrace(TraceData,ActualTrace))
+            render.drawRectFast(X*ScaleFactor.x,Y*ScaleFactor.y,ScaleFactor.x,ScaleFactor.y)
+        render.selectRenderTarget()
+        return true
+    end
+    
     hook.add("renderoffscreen","libs.tracer_renderoffscreen",function()
         local Traces = libs_tracer.data.rts
-        local Executions = 0
         for K,TraceData in pairs(Traces) do
             Executions = 0
             if TraceData.finished then continue end
-            while math.max(quotaAverage(), quotaUsed()) < quotaMax()*0.05 and Executions < 100 do
-                if TraceData.finished then continue end
-                if not TraceData.tracing then continue end
-                local Res = TraceData.res
-                local Scale = (1024/Res)
-                render.selectRenderTarget("libs.tracer_"..K)
-                    local X = TraceData.x
-                    local Y = TraceData.y
-                    if X >= (Res.x-1) then
-                        if Y >= Res.y-1 then TraceData.finished = true TraceData.donefunc() end
-                        TraceData.y = (Y + 1)%Res.y
-                    end
-                    TraceData.x = (X + 1)%Res.x
-                    local Pos = TraceData.pos
-                    local Dir = Vector(100,-X+Res.x/2,-Y+Res.y/2 ):getRotated(TraceData.ang):getNormalized()
-                    local ActualTrace = trace.trace(Pos,Pos+Dir*60000,{TraceData.ent})
-                    render.setColor(dotrace(TraceData,ActualTrace))
-                    render.drawRectFast(X*Scale.x,Y*Scale.y,Scale.x,Scale.y)
-                render.selectRenderTarget()
-                Executions = Executions + 1
-            end
+            if not TraceData.tracing then continue end
+            local Res = TraceData.res
+            local Scale = (1024/Res)
+            libs_tracer.callTrace(K)
         end
     end)
     

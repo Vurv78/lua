@@ -19,7 +19,7 @@ __Method 2: - Copy into the StarfallEx editor:__
 
 __Both Methods:__
 5. Read for any additional instructions in the form of comments in the code.
-## How to USE Expression2s/Libraries:
+## How to USE the Chips/Libraries:
   #### Libraries:
   1. Use --@include <filepath>.txt in your code with filepath being the filepath of the code you saved the library in.
   2. You may need to require('filepath') without the .txt as well.

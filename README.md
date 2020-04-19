@@ -1,5 +1,5 @@
 # Starfallex-creations
-A collection of my public libraries/expression2 files.
+A collection of my public libraries/starfallex code.
 Feel free to leave me suggestions for code and libraries, and to commit when you feel something is needed.
 For my expression2 creations: https://github.com/Vurv78/expression2-public-e2s
 https://discord.gg/RWrvmUf Link to my discord / Github webhook updates shown here

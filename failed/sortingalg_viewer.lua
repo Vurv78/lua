@@ -33,7 +33,7 @@ function update()
     end)
 end
 
-
+update()
 // Initial update
 
 hook.add("render","",function()

@@ -33,7 +33,7 @@ if SERVER then
 
 else
     lib = {}
-    local function getShared(url,success)
+    local function httpGetShared(url,success)
         if player() ~= owner() then
             net.start("addqueue")
             net.send()
@@ -51,6 +51,6 @@ else
             end)
         end
     end
-    lib.getShared = getShared
+    lib.httpGetShared = httpGetShared
     return lib
 end

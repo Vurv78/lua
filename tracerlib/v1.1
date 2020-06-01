@@ -11,7 +11,7 @@ else
         DoDebug = Mode or 0
     end
     libs_tracer.createTrace = function(Index,Res,Tracing,Done)
-        assert(type(Tracing)=="function","Needs a tracing function.")
+        // Does not need a tracing function, you can call it yourself.
         assert(type(Done)=="function","Needs a finish trace function.")
         local rttab = libs_tracer.data.rts
         local def_entity = chip()
@@ -27,23 +27,25 @@ else
             tracing = false,
             finished = false,
             showing = false,
+            scale = Res/1024,
             x = 0,
             y = 0,
-            trace = function(Color)
-                local X = x
-                local Y = y
-                if X >= (res.x-1) then
-                    if Y >= res.y-1 then finished = true donefunc() end
-                    traceobj.y = (Y + 1)%Res.y
-                end
-                traceobj.x = (X + 1)%Res.x
-                local Pos = traceobj.pos
-                local Dir = Vector(100,-X+Res.x/2,-Y+Res.y/2 ):getRotated(traceobj.ang):getNormalized()
-                local ActualTrace = trace.trace(Pos,Pos+Dir*60000,{traceobj.ent})
-                render.setColor(Color)
-                render.drawRectFast(X*Scale.x,Y*Scale.y,Scale.x,Scale.y)
-            end,
         }
+        traceobj.trace = function(InputColor)
+            local X = traceobj.x
+            local Y = traceobj.y
+            if X >= (Res.x-1) then
+                if Y >= Res.y-1 then finished = true donefunc() end
+                traceobj.y = (Y + 1)%Res.y
+            end
+            traceobj.x = (X + 1)%Res.x
+            local Pos = traceobj.pos
+            local Dir = Vector(100,-X+Res.x/2,-Y+Res.y/2 ):getRotated(traceobj.ang):getNormalized()
+            local ActualTrace = trace.trace(Pos,Pos+Dir*60000,{traceobj.ent})
+            render.setColor(InputColor)
+            local Scale = traceobj.scale
+            render.drawRectFast(X*Scale.x,Y*Scale.y,Scale.x,Scale.y)
+        end
         render.createRenderTarget("libs.tracer_"..Index)
         rttab[Index] = traceobj
         return true

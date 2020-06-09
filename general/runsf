@@ -1,7 +1,7 @@
 --@name RunSF
 --@author Vurv
 --@server
-
+// Source -- https://github.com/Vurv78/starfallex-creations/blob/master/general/runsf
 function runLua(S)
     xpcall(loadstring(S),function(ERROR)
         print("Code errored: "..tostring(ERROR))

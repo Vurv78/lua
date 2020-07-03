@@ -5,7 +5,7 @@
 if SERVER then
 
     E = chip()
-    timer.simple(0.5,function()
+    timer.simple(0.5,function() // EDIT: Use ClientInitialized hook
         // Putting this in a timer as sending stuff from server -> client is not always reliable
         // Due to clientside ping. half a second is good enough for most cases.
         // Could maybe adjust depending on who you're sending it to's ping... never tried it

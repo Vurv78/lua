@@ -1,7 +1,9 @@
 --@name RunSF
 --@author Vurv
 --@server
-// Source -- https://github.com/Vurv78/starfallex-creations/blob/master/general/runsf
+-- Source: https://github.com/Vurv78/starfallex-creations/blob/master/general/runsf
+-- An example implementation on making your own cool sort of sandboxed starfall runtime.
+
 function runLua(S)
     xpcall(loadstring(S),function(ERROR)
         print("Code errored: "..tostring(ERROR))

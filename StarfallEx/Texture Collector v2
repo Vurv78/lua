@@ -1,7 +1,7 @@
 --@name Texture Collector v2
 --@author Vurv
 --@client
--- Source: 
+-- Source: https://github.com/Vurv78/starfallex-creations/blob/master/StarfallEx/Texture%20Collector%20v2
 
 -- Chip to save textures in R,G,B format uncompressed.
 -- Change it as you see fit

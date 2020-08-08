@@ -7,7 +7,7 @@
 -- This is like the old texture collector, but a bit more optimized and gets all of the textures of the maps automagically
 -- without you needing to look at them!
 
--- Source : https://github.com/Vurv78/starfallex-creations
+-- Source : https://github.com/Vurv78/starfallex-creations/blob/master/StarfallEx/GMOD%20Texture%20Collector/Texture%20Collector%20v3
 
 if player() ~= owner() then return end
 

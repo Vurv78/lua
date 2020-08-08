@@ -18,6 +18,7 @@ local format = string.format
 
 -- init
 file.createDir("textures")
+file.createDir("textures/"..game.getMap())
 render.createRenderTarget("rt")
 
 local function canRun()

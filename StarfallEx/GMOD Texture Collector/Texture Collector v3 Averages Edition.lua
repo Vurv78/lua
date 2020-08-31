@@ -1,7 +1,9 @@
---@name Texture Collector v3 Averages Edition
+--@name Texture Collector v3 Averages Edition (Fixed Twice)
 --@author Vurv
 --@client
 
+-- Last benchmarked, 8/7/2020
+-- Took 226s with a timebuffer of 0.06 to save all textures in gm_bigcity (~250 textures or something)
 -- This is like the old texture collector, but a bit more optimized and gets all of the textures of the maps automagically
 -- without you needing to look at them!
 -- Averages edition gets the average color of a texture and saves all of the averages to textures/(map)/averages.txt in JSON format.
@@ -18,6 +20,7 @@ local format = string.format
 
 -- init
 file.createDir("textures")
+file.createDir("textures/"..game.getMap())
 render.createRenderTarget("rt")
 
 local function canRun()
@@ -63,7 +66,7 @@ local function main()
         end
         local Av = Color(Col.r/512^2,Col.g/512^2,Col.b/512^2)
         print(Av,"Loaded average color for "..Name)
-        Averages[Name] = {Col.r,Col.g,Col.b} -- Save as table for json.
+        Averages[Name] = {math.round(Av.r,2),math.round(Av.g,2),math.round(Av.b,2)} -- Save as table for json.
         quotaCheck()
     end
     local M = game.getMap()

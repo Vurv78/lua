@@ -15,6 +15,7 @@ if player() ~= owner() then return end
 local CPUMax = 0.9 -- 0-1 as a percentage. Higher is more unstable without extra quota checks.
 local Extension = ".png" -- What to save the file extension as, in this case we can save as .png
 
+local encode = require("modules/png.txt")
 local FindMatFunc = function(mat) -- Needs to return width and height
     local w,h = 512,512 -- For some reason getWidth and getHeight are returning 256..??
     Png = encode(w,h)
@@ -30,7 +31,6 @@ local SaveFunc = function(Pixels,Path) -- PNG File saving Function
     F:close()
 end
 
-local encode = require("modules/png.txt")
 local Materials = {}
 local Png -- Not assigned until a texture is found
 

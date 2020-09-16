@@ -6,7 +6,9 @@
 -- Texture Collector v4 by Vurv on Discord (363590853140152321)
 -- Allows you to customize the pixel saving / file saving much more easily with a PNG example.
 -- PNG File will be included
+-- Saved all textures on gm_bigcity in 100s as 64x64 pngs
 -- Source: https://github.com/Vurv78/starfallex-creations/
+-- Updated 9/15/2020 to allow textures to scale properly. Change the findMatFunc to return the resolution you want to save, the texture will scale to that. You cannot save bigger than 512x512 sadly (It would be super slow anyway)
 
 -- TODO: Find out what causes some textures to return a weird getWidth and getHeight that doesn't match with their actual size.
 
@@ -17,7 +19,7 @@ local Extension = ".png" -- What to save the file extension as, in this case we 
 
 local encode = require("modules/png.txt")
 local FindMatFunc = function(mat) -- Needs to return width and height
-    local w,h = 512,512 -- For some reason getWidth and getHeight are returning 256..??
+    local w,h = 64,64 -- The textures will scale to this resolution and save in that resolution.
     Png = encode(w,h)
     return w,h
 end
@@ -70,12 +72,12 @@ local function main()
         if file.exists(Path) then print(Color(255,50,50),"Failed to load mat "..Name..", it already exists!") continue end
         usemat:setTexture("$basetexture",material.getTexture(Name,"$basetexture"))
         render.setMaterial(usemat)
+        local Width,Height = FindMatFunc(usemat)
         render.selectRenderTarget("rt")
-            render.drawTexturedRect(0,0,512,512)
+            render.drawTexturedRect(0,0,Width,Height)
             render.capturePixels()
         render.selectRenderTarget()
         local Pixels = {}
-        local Width,Height = FindMatFunc(usemat)
         for Y = 0,Height-1 do -- This does Y,X so our PNG's don't end up sideways, change to be reverse if you want to do your own filetype.
             for X = 0,Width-1 do
                 quotaCheck()

@@ -83,7 +83,7 @@ local function main()
                 quotaCheck()
                 local C = readPixel(X,Y)
                 local V = PixelFunc(C.r,C.g,C.b)
-                if V then Pixels[X+Y*512+1] = V end
+                if V then Pixels[X+Y*Height+1] = V end
                 quotaCheck()
             end
         end

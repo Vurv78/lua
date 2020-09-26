@@ -16,7 +16,7 @@ local FPS = 60                          -- Frames per second
 local FOV = 130
 local Res = Vector(1024,1024)           -- Default = 1024,1024 (This is the highest res you can get)
 local AntiAliasing = true               -- Whether to use anti-aliasing in the render
-local Enabled = false                   -- Whether to see the camera by default when Enabled
+local Enabled = true                    -- Whether to see the camera by default when Enabled (for owner)
 -- Configs --
 
 

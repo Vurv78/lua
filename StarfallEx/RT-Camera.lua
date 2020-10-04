@@ -55,8 +55,12 @@ render.createRenderTarget("rt")
 local rtMat = material.create("gmodscreenspace")
 rtMat:setTextureRenderTarget("$basetexture", "rt")
 
+local RequestingFrames = true -- So we only render the camera when we are looking at the screen
+
 hook.add("renderscene","",function(origin,angles,fov)
     -- Fps checking
+    if not RequestingFrames then return end
+    RequestingFrames = false
     if not Enabled then return end
     if not Screen then return end
     if quotaTotalAverage()>quotaMax()*0.5 then return end -- Additional check so that people don't die from quota
@@ -92,6 +96,7 @@ hook.add("starfallUsed","",function(ply)
 end)
 
 hook.add("render","",function()
+    RequestingFrames = true
     setRGBA(0,255,255,255)
     Screen = getScreenEntity()
     drawText(256,256,"No infinite loop pl0x",1)

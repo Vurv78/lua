@@ -15,7 +15,7 @@
 if player() ~= owner() then return end
 
 local CPUMax = 0.9 -- 0-1 as a percentage. Higher is more unstable without extra quota checks.
-local Extension = ".png" -- What to save the file extension as, in this case we can save as .png
+local FilePath = "textures/@.txt" -- @ will be replaced with the texture name.
 
 local encode = require("modules/png.txt")
 local FindMatFunc = function(mat) -- Needs to return width and height
@@ -67,7 +67,8 @@ local function main()
     print(Color(255,255,50),"Starting to load textures, look in console for more details")
     for Name in next,Materials do
         printMessage(2,"Loading mat"..Name.."\n")
-        local Path = format("textures/%s"..(Extension or ".txt"),string.replace(Name,"/","_"))
+        local FixedName = string.replace(Name,"/","_") -- We have to replace /'s because they interfere with .vex file comments which are used as: // comment
+        local Path = string.replace(FilePath,"@",FixedName)
         quotaCheck()
         if file.exists(Path) then print(Color(255,50,50),"Failed to load mat "..Name..", it already exists!") continue end
         usemat:setTexture("$basetexture",material.getTexture(Name,"$basetexture"))

@@ -2,7 +2,6 @@
 A collection of my public libraries/starfallex code.
 Feel free to leave me suggestions for code and libraries, and to commit when you feel something is needed.
 For my expression2 creations: https://github.com/Vurv78/expression2-public-e2s
-https://discord.gg/RWrvmUf Link to my discord / Github webhook updates shown here
 
 ## How to INSTALL StarfallEx chips/Libraries:
 __Method 1 - Copy into GMOD:__

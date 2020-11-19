@@ -26,4 +26,4 @@ __Both Methods:__
   #### Chips:
   1. Follow the instructions in the written code if there are any.
   2a. If there aren't, just read the code to see what it does or make an issue to this github.
-### Please let me know if you encounter any bugs
+### Let me know if you encounter any bugs / make an issue

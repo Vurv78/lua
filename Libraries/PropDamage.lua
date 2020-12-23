@@ -2,7 +2,8 @@
 --@author Vurv
 --@server
 
--- This basically just acts like the addon Extended Prop Damage, which can be found here: https://steamcommunity.com/sharedfiles/filedetails/?id=944542795
+-- This basically just acts like the addon Simple Prop Damage, which can be found here: https://steamcommunity.com/sharedfiles/filedetails/?id=346585225
+-- Doesn't make any debris or anything tho.
 -- You can register any prop (that you have toolgun perms on) so that it has health points that are deduced whenever it's shot at, it also slowly makes the prop go from white to red.
 -- It'll take physics damage and everything, and you can disable whether the prop color fades to red (which currently doesn't support the prop color already set.)
 
@@ -58,6 +59,8 @@ hook.add("EntityRemoved","phc_remove",function(ent)
     end
 end)
 
+--[[ Example Chip here
+
 --@name Example Chip
 --@server
 --@include libs/phc.txt
@@ -69,3 +72,5 @@ for I=1,4 do
     p:applyForceCenter( Vector( math.random(-1,1)*1000, math.random(-1,1)*1000, math.random(-1,1)*1000 ) )
     p:setHealth(500)
 end
+
+]]

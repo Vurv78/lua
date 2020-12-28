@@ -8,7 +8,6 @@
 -- Purpose -- This is a starfall chip that works just like an RT camera, except you can configure the resolution, field of view/zooming, frames per second and more.
 -- Tbh, It feels less laggier than actual RT Cameras and has better quality. You can have multiple of these placed down, they will share cpu but not really well after the second camera.
 
-
 -- Disabled by default to prevent lag
 
 -- Configs --
@@ -27,7 +26,6 @@ local deltatime = 0
 local fpsdelta = 1/FPS
 local fpstime = timer.curtime()
 local Chip = chip()
-local Screen
 local ScaleMatrix = Matrix()
 ScaleMatrix:setScale(1024/Res)
 
@@ -46,7 +44,6 @@ local drawText = render.drawText
 local setMaterial = render.setMaterial
 local renderView = render.renderView
 local isInRenderView = render.isInRenderView
-local getScreenEntity = render.getScreenEntity
 local popMatrix = render.popMatrix
 local setFilterMag = render.setFilterMag
 
@@ -62,7 +59,6 @@ hook.add("renderscene","",function(origin,angles,fov)
     if not RequestingFrames then return end
     RequestingFrames = false
     if not Enabled then return end
-    if not Screen then return end
     if quotaTotalAverage()>quotaMax()*0.5 then return end -- Additional check so that people don't die from quota
     local time = curtime()
     if time < fpstime + fpsdelta then return end
@@ -74,7 +70,8 @@ hook.add("renderscene","",function(origin,angles,fov)
     
     selectRenderTarget("rt")
         if isInRenderView() then
-            drawText(256,256,"Nope",1)
+            drawText(256,256,"No Infinite Loop Pl0x",1)
+            selectRenderTarget()
             return
         end
         renderView{
@@ -97,9 +94,6 @@ end)
 
 hook.add("render","",function()
     RequestingFrames = true
-    setRGBA(0,255,255,255)
-    Screen = getScreenEntity()
-    drawText(256,256,"No infinite loop pl0x",1)
     setMaterial(rtMat)
     pushMatrix(ScaleMatrix)
     setRGBA(255,255,255,255)

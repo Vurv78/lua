@@ -2,9 +2,9 @@
 --@author Vurv
 --@client
 
--- Texture Collector v4 by Vurv on Discord (363590853140152321)
+-- Texture Collector v4.5 by Vurv on Discord (363590853140152321)
 -- Allows you to customize the pixel saving / file saving much more easily with an example of a compressed texture, that is ~200kb per 512x512 texture.
--- Takes ~80 seconds to save all of the textures in bigcity as these compressed 200kb text files. (~60MB)
+-- Takes ~80 seconds to save all of the textures in bigcity as these compressed 200kb text files (512x512 res). (~60MB)
 
 if player() ~= owner() then return end
 
@@ -20,11 +20,11 @@ local render = render
 local readPixel = render.readPixel
 local format = string.format
 
-local PixelFunc = function(r,g,b) -- PNG Pixel saving function
+local PixelFunc = function(r,g,b) -- Returns a string representing the r,g,b pixel. This will be pushed to the current pixels table which will be saved in the SaveFunc (unless you return false)
     return format("%c%c%c",r,g,b)
 end
 
-local SaveFunc = function(Pixels,Path) -- PNG File saving Function
+local SaveFunc = function(Pixels,Path) -- File saving function
     local data = fastlz.compress( table.concat(Pixels) )
     file.write(Path,data)
 end
@@ -59,7 +59,7 @@ local function main()
     print(Color(255,255,50),"Starting to load textures, look in console for more details")
     for Name in next,Materials do
         printMessage(2,"Loading mat"..Name.."\n")
-        local FixedName = string.replace(Name,"/","_") -- We have to replace /'s because they interfere with .vex file comments which are used as: // comment
+        local FixedName = string.replace(Name,"/","_") -- We have to replace /'s since lua's file system uses forward slashes :v
         local Path = string.replace(FilePath,"@",FixedName)
         quotaCheck()
         if file.exists(Path) then print(Color(255,50,50),"Failed to load mat "..Name..", it already exists!") continue end
@@ -91,10 +91,14 @@ end
 
 co = coroutine.create(main)
 
+local coroutine = coroutine
+local coroutine_resume = coroutine.resume
+local coroutine_status = coroutine.status
+
 hook.add("renderoffscreen","",function()
-    if coroutine.status(co) ~= "dead" then
+    if coroutine_status(co) ~= "dead" then
         if canRun() then
-            coroutine.resume(co)
+            coroutine_resume(co)
         end
     end
 end)

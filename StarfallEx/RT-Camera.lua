@@ -21,7 +21,6 @@ local Enabled = true                    -- Whether to see the camera by default 
 
 -- Local vars to optimize stuff.
 local localplayer = player() if localplayer ~= owner() then Enabled = false end
-local framesRendered = 0
 local deltatime = 0
 local fpsdelta = 1/FPS
 local fpstime = timer.curtime()
@@ -66,7 +65,6 @@ hook.add("renderscene","",function(origin,angles,fov)
     fpstime = time
     
     if renderViewsLeft()<1 then print("No renderviews left") return end
-    framesRendered = framesRendered + 1
     
     selectRenderTarget("rt")
         if isInRenderView() then

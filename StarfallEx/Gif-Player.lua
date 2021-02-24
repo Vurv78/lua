@@ -9,6 +9,9 @@
 -- My website limits the gifs to be 200 frames.
 -- Doesn't have dynamic frames, but the website does provide the frame timestamps / ms between them, so you can do it yourself
 
+-- As of sometime around January, Gif saving / playing functionality has been removed from my website, not sure if i'll add it again. See https://github.com/Vurv78/Website
+-- If I do add it again, I need to know how to automatically clean files so you guys can't save bad stuff to my website :v
+
 if player() ~= owner() then return end
 
 local CurrentGifData

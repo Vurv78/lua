@@ -10,6 +10,6 @@ Somewhat heavily modified from
 Modified from
 [lattejed/a-star-lua](https://github.com/lattejed/a-star-lua)
 
-## StarfallEx/Libraries/perlin.lua
+### StarfallEx/Libraries/perlin.lua
 Pretty much unmodified. Comes from someone's transpiled C->Lua implementation
 [GHandel](https://stackoverflow.com/questions/33425333/lua-perlin-noise-generation-getting-bars-rather-than-squares)

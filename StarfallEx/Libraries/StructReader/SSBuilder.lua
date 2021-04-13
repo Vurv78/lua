@@ -39,7 +39,7 @@ local Handlers = {
         return self:readUInt32()
     end,
     
-    -- Null terminated string \0
+    -- Null terminated string
     ["cstr"] = function(self)
         return self:readString()
     end,
@@ -64,8 +64,7 @@ function SSBuilder:initialize(definition)
     local used_keys = {}
     local struc, n = {}, 1
     for line in nocomments:gmatch("[^\n\r,]+") do
-        local key, rtype, count = line:match("%s*([%w_]+)%s*[:=]%s*%[?%s*([uifcstr]+%d*);?%s*(%d*)%]?")
-        count = count=="" and 1 or tonumber(count)
+        local key, rtype, count = line:match("%s*([%w_]+)%s*[:=]%s*%[?%s*([uifcstr]+%d*);?%s*(%$?[%w_%d]*)%]?")
         
         -- Check if key exists, because an empty line being passed here would break it otherwise.
         -- Comments cause this.
@@ -76,7 +75,7 @@ function SSBuilder:initialize(definition)
             end
             local handler = Handlers[rtype]
             if not handler then throw("Unknown or invalid type [".. rtype .. "] in SSBuilder") end
-            struc[n] = { key, rtype, count }
+            struc[n] = { key, rtype, count or 1 }
             used_keys[key] = true
             n = n + 1
         end
@@ -95,6 +94,18 @@ function SSBuilder:parse(raw, big)
     
     for _, field_data in ipairs(struc) do
         local key, rtype, count = unpack(field_data)
+        
+        if type(count) ~= "number" then
+            if count:startWith("$") then
+                local var_name = count:sub(2)
+                local var = data[var_name]
+                if not var then throw("Variable " .. var_name .. " not found in parse runtime!") end
+                count = var
+            else
+                count = count=="" and 1 or tonumber(count)
+            end
+        end
+        
         local handler = Handlers[rtype]
         
         if count > 1 then
@@ -114,7 +125,5 @@ end
 function SSBuilder:parseBig(raw)
     return self:parse(raw, true)
 end
-
--- See the example at Example.lua
 
 return SSBuilder

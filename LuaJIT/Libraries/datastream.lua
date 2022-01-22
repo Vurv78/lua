@@ -4,7 +4,7 @@
 	-- Rest is by me.
 	-- Fully documented with EmmyLua annotations.
 
-	Features:
+	## Features
 		Reading & Writing:
 			Null terminated strings
 			Signed Integers (8, 16, 32, 64)
@@ -17,6 +17,11 @@
 			visual pattern similar to C structs or whever else you'd normally use structs.
 
 			See an example below.
+
+	## Todo
+		IEEE754 Binary64 Double (F64)
+		IEEE754 Binary16 Float (F16)
+		Posit Numbers / Universal Numbers (http://www.johngustafson.net/pdfs/BeatingFloatingPoint.pdf)
 ]=]
 
 local I8_MAX = 128
@@ -305,26 +310,28 @@ end
 --- Helper Struct class to Read and Write structs from a struct definition
 --- ## Example code
 --- 	```lua
---- 		local Message = DataStruct [[
----				// Comments (C or Lua style.)
----				sender_id: u32,
----				message: cstr,
----
+---			---@type DataStruct
+---			local Message = DataStruct [[
+---				// Comments (C, Lua or Python style.)
+---				sender_id: u32;
+---				message: cstr;
 ---				// Variable length array / Explicit vector.
----				n_reactions: u32,
----				reactions: [u8, $n_reactions]
---- 		]]
----
---- 		local msg = Message:encode {
+---				n_reactions: u32;
+---				reactions: [u8; $n_reactions]
+---			]]
+---			local msg = Message:encode {
 ---				sender_id = 55,
 ---				message = "Foobar",
----
 ---				n_reactions = 3,
 ---				reactions = { 2, 5, 23 }
---- 		}
+---			}
 ---
---- 		local bytes = msg:getBuffer()
---- 		-- Ready to be used.
+---			local bytes = msg:getBuffer()
+---
+---			local msg = Message:decode( bytes )
+---			for k, v in pairs(msg) do
+---				print(k, v)
+---			end
 --- 	```
 ---@class DataStruct
 ---@field fields table<number, { key: string, rtype: string, count: string }>
@@ -368,27 +375,41 @@ local WriteHandlers = {
 
 ---@param definition string
 local function parse(definition)
-	local nocomments = string.gsub(definition, "[-/]+.-\n", "\n")
+	local nocomments = string.gsub(definition, "[#/-]+.-\n", "\n")
 
 	local struct, n = {}, 1
 	for line in nocomments:gmatch("[^\n\r,]+") do
-		local key, rtype, count = line:match("%s*([%w_]+)%s*[:=]%s*%[?%s*([uifcstr]+%d*);?%s*%$?([%w_%d]*)%]?")
+		-- Parser? Nah :p
+		local key, rtype, count = line:match("%s*([%w_]+)%s*[:=]%s*%[?%s*([uifcstr]+%d*);?%s*%$?([%w_]*)%]?")
 
 		-- Check if key exists, because an empty line being passed here would break it otherwise.
 		-- Comments cause this.
 		if key then
 			if struct[key] then
-				error("Repeated key [" .. key .. "] found at line " .. n .. " in SSBuilder")
+				error("Repeated key [" .. key .. "] found at line " .. n .. " in DataStruct builder")
 			end
 
 			local handler = Handlers[rtype]
-			if not handler then error("Unknown or invalid type [".. rtype .. "] in SSBuilder") end
+			if not handler then error("Unknown or invalid type [".. rtype .. "] in DataStruct builder") end
 
 			-- "count" is the number of times to read the type.
 			-- This is for array types [f32; 3].
 			-- It may be a string, in case of variable length. [f32; $n]
 
-			local t = { key, n, rtype, tonumber(count) or (count == "" and 1 or count) }
+			if count == "" then
+				count = nil
+
+				assert( not string.find(line, "[", 1, true), "Malformed array block. Use [u8; 55] or [i32; $len]" )
+			else
+				local n = tonumber(count)
+				if not n then
+					assert(struct[count], "Array length field $" .. count .. " not found in DataStruct builder")
+				else
+					count = n
+				end
+			end
+
+			local t = { key, n, rtype, count }
 			struct[key], struct[n] = t, t
 			n = n + 1
 		end
@@ -437,19 +458,18 @@ function DataStruct:encode(data)
 		local ty, count = field[3], field[4]
 
 		if type(count) == "number" then
-			if count > 1 then
-				for i = 1, count do
-					WriteHandlers[ty](writer, v[i])
-				end
-			else
-				WriteHandlers[ty](writer, v)
+			for i = 1, count do
+				WriteHandlers[ty](writer, v[i])
 			end
-		else
+		elseif count then
 			-- Variable length
 			local count = assert(data[count], "Missing variable reference [" .. count .. "] in DataStruct:encode")
 			for i = 1, count do
 				WriteHandlers[ty](writer, v[i])
 			end
+		else
+			-- Single item, no table
+			WriteHandlers[ty](writer, v)
 		end
 	end
 	return writer
@@ -464,15 +484,11 @@ function DataStruct:decode(stream)
 	for nidx, v in ipairs(self.fields) do
 		local idx, ty, count = v[1], v[3], v[4]
 		if type(count) == "number" then
-			if count > 1 then
-				local t = {}
-				for i = 1, count do
-					t[i] = Handlers[ty](reader)
-				end
-				out[idx] = t
-			else
-				out[idx] = Handlers[ty](reader)
+			local t = {}
+			for i = 1, count do
+				t[i] = Handlers[ty](reader)
 			end
+			out[idx] = t
 		elseif count then
 			-- Variable length
 			local v = self.fields[count][1]
@@ -480,15 +496,14 @@ function DataStruct:decode(stream)
 			local count = out[v]
 			assert(type(count) == "number", "Variable length field [" .. count .. "] is not a number")
 
-			if count > 1 then
-				local t = {}
-				for i = 1, count do
-					t[i] = Handlers[ty](reader)
-				end
-				out[idx] = t
-			else
-				out[idx] = Handlers[ty](reader)
+			local t = {}
+			for i = 1, count do
+				t[i] = Handlers[ty](reader)
 			end
+			out[idx] = t
+		else
+			-- Single item
+			out[idx] = Handlers[ty](reader)
 		end
 	end
 	return out
@@ -498,25 +513,5 @@ end
 function DataStruct:getBuffer()
 	return self.stream:getBuffer()
 end
-
-local Message = DataStruct [[
-	// Comments (C or Lua style.)
-	sender_id: u32,
-	message: cstr,
-	---
-	// Variable length array / Explicit vector.
-	n_reactions: u32,
-	reactions: [u8, $n_reactions]
-]]
-
-local msg = Message:encode {
-	sender_id = 55,
-	message = "Foobar",
-
-	n_reactions = 3,
-	reactions = { 2, 5, 23 }
-}
-
-local bytes = msg:getBuffer()
 
 return DataStream, DataStruct

@@ -154,9 +154,8 @@ end
 ---@param len integer
 function DataStream:read(len)
 	local start = self.ptr + 1
-	local ret = string.sub(self.content, start, start + len)
-	self.ptr = start + len - 1
-	return ret
+	self.ptr = self.ptr + len
+	return string.sub(self.content, start, self.ptr)
 end
 
 ---@param byte integer

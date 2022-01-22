@@ -153,8 +153,9 @@ end
 
 ---@param len integer
 function DataStream:read(len)
-	local ret = string.sub(self.content, self.ptr, self.ptr + len)
-	self.ptr = self.ptr + len
+	local start = self.ptr + 1
+	local ret = string.sub(self.content, start, start + len)
+	self.ptr = start + len - 1
 	return ret
 end
 
@@ -162,8 +163,8 @@ end
 ---@return string
 function DataStream:readUntil(byte)
 	self.ptr = self.ptr + 1
-	local ed = string.find(self.content, string.char(byte), self.ptr, true)
-	local ret = string.sub(self.content, self.ptr, ed)
+	local ed = string.find(self.content, string.char(byte), self.ptr, true) or #self.content
+	local ret = string.sub(self.content, self.ptr, ed - 1)
 	self.ptr = ed
 	return ret
 end
@@ -417,19 +418,18 @@ local function parse(definition)
 	return struct, n
 end
 
-setmetatable(DataStruct, {
-	__call = function(_, str)
-		local def, n = parse(str)
-		return setmetatable({
-			fields = def,
-			n = n,
-			stream = DataStream.new(),
+---@param str string
+function DataStruct.new(str)
+	local def, n = parse(str)
+	return setmetatable({
+		fields = def,
+		n = n,
+		stream = DataStream.new(),
 
-			-- Read data
-			data = {},
-		}, DataStruct)
-	end
-})
+		-- Read data
+		data = {},
+	}, DataStruct)
+end
 
 --- Encodes data into bytes, from a DataStruct template.
 ---@param data table<string|number, any>
@@ -514,4 +514,4 @@ function DataStruct:getBuffer()
 	return self.stream:getBuffer()
 end
 
-return DataStream, DataStruct
+return DataStream, DataStruct.new, DataStruct
